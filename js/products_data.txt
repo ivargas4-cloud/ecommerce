@@ -1,0 +1,176 @@
+const products = [
+  {
+    id: "base-natural",
+    name: "Base Natural",
+    type: "Base",
+    color: "claro",
+    formula: "Líquida",
+    skin: "Normal",
+    tone: "Claro",
+    price: 45000,
+    stock: 8,
+    category: "Maquillaje",
+    description: "Base líquida de cobertura natural, pensada para un acabado uniforme y ligero.",
+    images: ["img/productos/base-natural/1.jpg", "img/productos/base-natural/2.jpg", "img/productos/base-natural/3.jpg"],
+    specs: {
+      "Contenido": "30 ml",
+      "Tipo de piel": "Normal y mixta",
+      "Acabado": "Natural",
+      "Fórmula cosmética": "Líquida",
+      "Ingredientes": "Base acuosa, glicerina y pigmentos cosméticos",
+      "Modo de uso": "Aplicar una pequeña cantidad y difuminar sobre el rostro",
+      "Cuidados": "Cerrar después de usar y conservar en un lugar fresco",
+      "Beneficios": "Cobertura uniforme y acabado natural"
+    },
+    tones: [
+      { name: "Claro", available: true },
+      { name: "Medio", available: true },
+      { name: "Beige", available: true },
+      { name: "Miel", available: false }
+    ]
+  },
+  {
+    id: "polvo-compacto",
+    name: "Polvo Compacto",
+    type: "Polvo",
+    color: "beige",
+    formula: "Polvo",
+    skin: "Mixta",
+    tone: "Beige",
+    price: 38000,
+    stock: 6,
+    category: "Maquillaje",
+    description: "Polvo compacto de textura fina para complementar el maquillaje con un acabado uniforme.",
+    images: ["img/productos/polvo-compacto/1.jpg", "img/productos/polvo-compacto/2.jpg", "img/productos/polvo-compacto/3.jpg"],
+    specs: {
+      "Contenido": "10 g",
+      "Tipo de piel": "Mixta y grasa",
+      "Acabado": "Suave",
+      "Fórmula cosmética": "Polvo",
+      "Ingredientes": "Polvos minerales y pigmentos cosméticos",
+      "Modo de uso": "Aplicar con brocha o esponja sobre el rostro",
+      "Cuidados": "Mantener cerrado y protegido de la humedad",
+      "Beneficios": "Ayuda a uniformar la apariencia del rostro"
+    },
+    tones: [
+      { name: "Claro", available: true },
+      { name: "Beige", available: true },
+      { name: "Medio", available: false }
+    ]
+  },
+  {
+    id: "paleta-sombras",
+    name: "Paleta de Sombras",
+    type: "Sombras",
+    color: "medio",
+    formula: "Polvo",
+    skin: "Normal",
+    tone: "Medio",
+    price: 62000,
+    stock: 5,
+    category: "Maquillaje",
+    description: "Paleta de sombras en tonos neutros para crear diferentes combinaciones de maquillaje de ojos.",
+    images: ["img/productos/sombras/1.jpg", "img/productos/sombras/2.jpg", "img/productos/sombras/3.jpg"],
+    specs: {
+      "Contenido": "9 tonos",
+      "Tipo de piel": "Todo tipo de piel",
+      "Acabado": "Mate y satinado",
+      "Fórmula cosmética": "Polvo",
+      "Ingredientes": "Pigmentos y componentes cosméticos",
+      "Modo de uso": "Aplicar sobre los párpados con brocha o aplicador",
+      "Cuidados": "Mantener la paleta cerrada y seca",
+      "Beneficios": "Variedad de tonos para diferentes looks"
+    },
+    tones: [
+      { name: "Claro", available: true },
+      { name: "Medio", available: true },
+      { name: "Oscuro", available: true }
+    ]
+  },
+  {
+    id: "mascara-pestanas",
+    name: "Máscara de Pestañas",
+    type: "Máscara",
+    color: "profundo",
+    formula: "Crema",
+    skin: "Normal",
+    tone: "Oscuro",
+    price: 42000,
+    stock: 7,
+    category: "Maquillaje",
+    description: "Máscara de pestañas de tono intenso para aportar definición y volumen a la mirada.",
+    images: ["img/productos/mascara/1.jpg", "img/productos/mascara/2.jpg", "img/productos/mascara/3.jpg"],
+    specs: {
+      "Contenido": "10 ml",
+      "Tipo de piel": "Todo tipo de piel",
+      "Acabado": "Definido",
+      "Fórmula cosmética": "Crema",
+      "Ingredientes": "Pigmentos y componentes cosméticos",
+      "Modo de uso": "Aplicar desde la raíz hacia las puntas de las pestañas",
+      "Cuidados": "Cerrar bien después de cada uso",
+      "Beneficios": "Definición y volumen visual"
+    },
+    tones: [
+      { name: "Oscuro", available: true },
+      { name: "Marrón", available: false }
+    ]
+  },
+  {
+    id: "labial-cremoso",
+    name: "Labial Cremoso",
+    type: "Labial",
+    color: "profundo",
+    formula: "Crema",
+    skin: "Normal",
+    tone: "Oscuro",
+    price: 35000,
+    stock: 9,
+    category: "Maquillaje",
+    description: "Labial cremoso de color intenso y textura uniforme para los labios.",
+    images: ["img/productos/labial/1.jpg", "img/productos/labial/2.jpg", "img/productos/labial/3.jpg"],
+    specs: {
+      "Contenido": "4 g",
+      "Tipo de piel": "Todo tipo de piel",
+      "Acabado": "Cremoso",
+      "Fórmula cosmética": "Crema",
+      "Ingredientes": "Ceras, aceites y pigmentos cosméticos",
+      "Modo de uso": "Aplicar directamente sobre los labios",
+      "Cuidados": "Mantener cerrado y protegido del calor",
+      "Beneficios": "Color uniforme y textura cremosa"
+    },
+    tones: [
+      { name: "Claro", available: true },
+      { name: "Medio", available: true },
+      { name: "Oscuro", available: true }
+    ]
+  },
+  {
+    id: "blush-liquido",
+    name: "Blush Líquido",
+    type: "Blush",
+    color: "miel",
+    formula: "Líquida",
+    skin: "Seca",
+    tone: "Miel",
+    price: 39000,
+    stock: 4,
+    category: "Maquillaje",
+    description: "Blush líquido de textura ligera para aportar color al rostro y facilitar la difuminación.",
+    images: ["img/productos/blush/1.jpg", "img/productos/blush/2.jpg", "img/productos/blush/3.jpg"],
+    specs: {
+      "Contenido": "8 ml",
+      "Tipo de piel": "Seca y normal",
+      "Acabado": "Natural",
+      "Fórmula cosmética": "Líquida",
+      "Ingredientes": "Agua, emolientes y pigmentos cosméticos",
+      "Modo de uso": "Aplicar una pequeña cantidad y difuminar sobre las mejillas",
+      "Cuidados": "Cerrar después de usar",
+      "Beneficios": "Color modulable y acabado natural"
+    },
+    tones: [
+      { name: "Claro", available: true },
+      { name: "Miel", available: true },
+      { name: "Oscuro", available: false }
+    ]
+  }
+];
