@@ -74,7 +74,9 @@ const load=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v||d}c
 /* Persiste productos, carrito y pedidos en el almacenamiento local del navegador. */
 const save=()=>{try{localStorage.setItem('jdi2',JSON.stringify({products:S.products,cart:S.cart,orders:S.orders}))}catch(e){}};
 const saved=load('jdi2',{});
+/* Estado central de la tienda. Los datos persistentes proceden de localStorage; el resto son valores temporales de navegación, filtros, formularios y selección. */
 const S={products:saved.products||SEED,cart:saved.cart||[],orders:saved.orders||SEED_ORD,
+ /* Comparación, tonos seleccionados y filtros activos. */
  cmp:[],ct:{},f:{},q:'',cat:'',view:'home',arg:null,tone:null,qty:1,img:0,step:1,co:{},err:{},payErr:'',ofil:{},ifil:{q:'',cat:''},oid:null,adm:null,fav:[]};
 /* Busca un producto por identificador en el estado actual. */
 const P=id=>S.products.find(p=>p.id==id);
@@ -97,7 +99,19 @@ return `<svg viewBox="0 0 200 210" xmlns="http://www.w3.org/2000/svg" role="img"
 }
 const PH={base:['base','base-2'],labial:['labial','labial-2'],rubor:['rubor','rubor-2'],mascara:['mascara','ojos'],paleta:['paletas','paleta-2']};
 /* Devuelve la galería configurada para un producto o imágenes predeterminadas por tipo. */
-const photosOf=p=>(p.photos&&p.photos.length)?p.photos.map(src=>({src,z:1})):(p.ph||PH[p.kind]||PH.base).map(n=>({src:'img/'+n+'.jpg',z:1}));
+const PRODUCT_GALLERIES={
+ 2:['img/productos/labial-mate-velvet-1.jpeg','img/productos/labial-mate-velvet-2.jpeg','img/productos/labial-mate-velvet-3.jpeg','img/productos/labial-mate-velvet-4.jpeg','img/productos/labial-mate-velvet-5.jpeg'],
+ 1:['img/productos/base-maquillaje-luminosa-1.jpeg', 'img/productos/base-maquillaje-luminosa-2.jpeg', 'img/productos/base-maquillaje-luminosa-3.jpeg', 'img/productos/base-maquillaje-luminosa-4.jpeg', 'img/productos/base-maquillaje-luminosa-5.jpeg'],
+ 3:['img/productos/rubor-compacto-1.jpeg', 'img/productos/rubor-compacto-2.jpeg', 'img/productos/rubor-compacto-3.jpeg', 'img/productos/rubor-compacto-4.jpeg', 'img/productos/rubor-compacto-5.jpeg'],
+ 4:['img/productos/mascara-pestanas-volume-1.jpeg', 'img/productos/mascara-pestanas-volume-2.jpeg', 'img/productos/mascara-pestanas-volume-3.jpeg', 'img/productos/mascara-pestanas-volume-4.jpeg', 'img/productos/mascara-pestanas-volume-5.jpeg'],
+ 5:['img/productos/paleta-sombras-nude-1.jpeg', 'img/productos/paleta-sombras-nude-2.jpeg', 'img/productos/paleta-sombras-nude-3.jpeg', 'img/productos/paleta-sombras-nude-4.jpeg', 'img/productos/paleta-sombras-nude-5.jpeg'],
+ 6:['img/productos/polvo-compacto-traslucido-1.jpeg', 'img/productos/polvo-compacto-traslucido-2.jpeg', 'img/productos/polvo-compacto-traslucido-3.jpeg', 'img/productos/polvo-compacto-traslucido-4.jpeg', 'img/productos/polvo-compacto-traslucido-5.jpeg'],
+ 7:['img/productos/labial-satinado-rose-1.jpeg', 'img/productos/labial-satinado-rose-2.jpeg', 'img/productos/labial-satinado-rose-3.jpeg', 'img/productos/labial-satinado-rose-4.jpeg', 'img/productos/labial-satinado-rose-5.jpeg'],
+ 8:['img/productos/mascara-pestanas-lengthening-1.jpeg', 'img/productos/mascara-pestanas-lengthening-2.jpeg', 'img/productos/mascara-pestanas-lengthening-3.jpeg', 'img/productos/mascara-pestanas-lengthening-4.jpeg', 'img/productos/mascara-pestanas-lengthening-5.jpeg'],
+ 9:['img/productos/paleta-sombras-cobre-1.jpeg', 'img/productos/paleta-sombras-cobre-2.jpeg', 'img/productos/paleta-sombras-cobre-3.jpeg', 'img/productos/paleta-sombras-cobre-4.jpeg', 'img/productos/paleta-sombras-cobre-5.jpeg'],
+ 10:['img/productos/base-maquillaje-cobertura-total-1.jpeg', 'img/productos/base-maquillaje-cobertura-total-2.jpeg', 'img/productos/base-maquillaje-cobertura-total-3.jpeg', 'img/productos/base-maquillaje-cobertura-total-4.jpeg', 'img/productos/base-maquillaje-cobertura-total-5.jpeg']
+};
+const photosOf=p=>(p.photos&&p.photos.length)?p.photos.map(src=>({src,z:1})):(PRODUCT_GALLERIES[p.id]||p.ph||PH[p.kind]||PH.base).map(src=>({src:src.startsWith('img/')?src:'img/'+src+'.jpg',z:1}));
 /* Genera la etiqueta de imagen de producto con texto alternativo. */
 const pic=(p,v=0)=>{const a=photosOf(p),f=a[v%a.length];return `<img alt="${esc(p.name)}" src="${f.src}" style="${f.z>1?`transform:scale(${f.z})`:''}">`};
 /* Recupera el tono seleccionado o el primer tono válido del producto. */
@@ -110,7 +124,7 @@ const stars=p=>{const f=Math.floor(p.rating);return `<div class="stars">${'★'.
 /* ---------- UTILIDADES GENERALES ---------- */
 /* Incluye mensajes, navegación, formato de dinero, cantidades y validaciones comunes. */
 /* Muestra un mensaje temporal de confirmación o validación. */
-function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2600)}
+function toast(m){let t=$('#toast');if(!t){t=document.createElement('div');t.id='toast';t.className='toast';t.setAttribute('role','alert');t.setAttribute('aria-live','assertive');document.body.appendChild(t)}t.textContent=m;t.hidden=false;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>{t.hidden=true;t.style.display=''},3200)}
 /* Cambia la ruta interna mediante el fragmento de URL. */
 const go=h=>{location.hash=h};
 /* Suma las unidades de todos los elementos del carrito. */
@@ -141,12 +155,11 @@ function addToCart(pid,tone,qty){
 function renderHeader(){
  const adm=S.view.startsWith('admin');
  $('#topbar').hidden=adm;$('#header').hidden=adm;
+ const footer=$('#jdi-footer');if(footer)footer.hidden=adm;
  $('#header').innerHTML=`<div class="logo" data-go="/">JDI<small>BEAUTY</small></div>
  <nav><a data-go="/" class="${S.view==='home'?'on':''}">Inicio</a>
- <div class="dd"><a data-go="/lista" class="${S.view==='list'&&!S.cat?'on':''}">Maquillaje ⌄</a><div class="ddm">${CATS.map(c=>`<a data-go="/lista/${c}">${c}</a>`).join('')}</div></div>
- <a data-go="/lista/Labios" class="${S.cat==='Labios'?'on':''}">Labios ⌄</a>
- <a data-go="/lista/Ojos" class="${S.cat==='Ojos'?'on':''}">Ojos ⌄</a>
- <a data-go="/lista/Rostro" class="${S.cat==='Rostro'?'on':''}">Rostro ⌄</a></nav>
+ <div class="dd"><a data-go="/lista" class="${S.view==='list'&&!S.cat?'on':''}">Maquillaje</a><div class="ddm">${CATS.map(c=>`<a data-go="/lista/${c}">${c}</a>`).join('')}</div></div>
+ </nav>
  <form class="search" id="sform"><input id="sq" placeholder="Buscar productos..." value="${esc(S.q)}"><button aria-label="Buscar">🔍</button></form>
  <div class="icons"><a class="ibtn" data-go="/admin/catalogo" title="Panel de administración">👤</a><a class="ibtn" data-go="/carrito">🛒${cartCount()?`<span class="badge">${cartCount()}</span>`:''}</a></div>`;
 }
@@ -157,17 +170,53 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 /* Renderiza el banner principal, beneficios, productos destacados y categorías. */
 /* Genera la vista inicial de la tienda. */
 function home(){
-  return `<section class="hero"><div class="himg l"><img alt="" src="img/hero-ojo.jpg"></div><div class="htxt"><h1>BELLEZA<br>QUE RESALTA<br>TU ESENCIA</h1><p>Maquillaje de alta calidad para cada versión de ti.</p><button class="btn" data-go="/lista">Descubrir productos</button></div><div class="himg r"><img alt="JDI Beauty" src="img/hero-prod.jpg"></div></section>
+  return `<section class="hero hero-carousel" id="heroCarousel" aria-label="Promociones y colección JDI Beauty">
+   <div class="hero-track">
+    <article class="hero-slide is-active" data-hero-slide="0" aria-hidden="false">
+     <img class="hero-bg" src="img/banner-jdi-01.jpg" alt="Colección JDI Beauty con maquillaje y retrato de belleza">
+     <div class="hero-caption caption-left"><span>JDI BEAUTY</span><h2>Tu belleza, tu esencia</h2><p>Encuentra los tonos que hablan de ti.</p><button class="btn" data-go="/lista">Descubrir productos</button></div>
+    </article>
+    <article class="hero-slide" data-hero-slide="2" aria-hidden="true">
+     <img class="hero-bg" src="img/banner-jdi-03.jpg" alt="Productos JDI Beauty en un ambiente elegante al atardecer">
+     <div class="hero-caption caption-right"><span>BEAUTY MOMENTS</span><h2>El toque que te distingue</h2><p>Explora tus favoritos de JDI Beauty.</p><button class="btn" data-go="/lista">Explorar maquillaje</button></div>
+    </article>
+    <article class="hero-slide" data-hero-slide="3" aria-hidden="true">
+     <img class="hero-bg" src="img/banner-jdi-04.jpg" alt="Colección de maquillaje JDI Beauty junto a una piscina al atardecer">
+     <div class="hero-caption caption-left"><span>JDI BEAUTY</span><h2>Brilla a tu manera</h2><p>Tu próximo favorito está aquí.</p><button class="btn" data-go="/lista">Descubrir productos</button></div>
+    </article>
+    <article class="hero-slide" data-hero-slide="1" aria-hidden="true">
+     <img class="hero-bg" src="img/banner-jdi-02-clean.png" alt="Colección JDI Beauty con paleta de sombras, rubor y brillo labial">
+     <div class="hero-caption caption-right"><span>COLECCIÓN JDI</span><h2>Detalles que enamoran</h2><p>Color, textura y acabado para cada ocasión.</p><button class="btn" data-go="/lista">Ver colección</button></div>
+    </article>
+    <article class="hero-slide hero-slide-final" data-hero-slide="4" aria-hidden="true">
+     <img class="hero-bg" src="img/banner-jdi-final.png" alt="Colección JDI Beauty con paleta de sombras, labial, base, brillo labial y rubor en una boutique al atardecer">
+     <div class="hero-caption hero-caption-final">
+      <span class="hero-final-brand">JDI BEAUTY</span>
+      <h2>Más que maquillaje,<br>es confianza</h2>
+      <div class="hero-final-benefits" aria-label="Beneficios de JDI Beauty">
+       <div><span aria-hidden="true">◇</span><small>Productos<br>de calidad</small></div>
+       <div><span aria-hidden="true">♧</span><small>Fórmulas<br>seguras</small></div>
+       <div><span aria-hidden="true">♧</span><small>Compra<br>fácil y segura</small></div>
+       <div><span aria-hidden="true">♡</span><small>Belleza<br>para todas</small></div>
+      </div>
+     </div>
+    </article>
+   </div>
+   <button class="hero-arrow prev" type="button" data-hero-nav="-1" aria-label="Imagen anterior">‹</button>
+   <button class="hero-arrow next" type="button" data-hero-nav="1" aria-label="Imagen siguiente">›</button>
+   <div class="hero-dots" role="group" aria-label="Seleccionar imagen del carrusel">${Array.from({length:5},(_,i)=>`<button type="button" class="hero-dot ${i===0?'active':''}" data-hero-dot="${i}" aria-label="Ir a la imagen ${i+1}" aria-pressed="${i===0?'true':'false'}"></button>`).join('')}</div>
+  </section>
  <div class="perks"><div class="perk"><i>🚚</i><span>Envío fijo $12.000<br>a todo el país</span></div><div class="perk"><i>🛡</i><span>Productos 100%<br>originales</span></div><div class="perk"><i>🍃</i><span>Maquillaje para<br>tu tipo de piel</span></div><div class="perk"><i>♡</i><span>Belleza que<br>resalta tu esencia</span></div></div>
  <section class="sec"><div class="sec-h"><h2>Productos destacados</h2><a data-go="/lista">Ver todos</a></div><div class="carwrap"><button class="cbtn l" data-car="-1" aria-label="Anterior">‹</button><div class="car" id="car">${S.products.map(p=>card(p)).join('')}</div><button class="cbtn r" data-car="1" aria-label="Siguiente">›</button></div></section>
  <section class="sec"><div class="sec-h"><h2>Nuestras categorías</h2></div><div class="cats">${CATS.map(c=>{return `<div class="cat" data-go="/lista/${c}"><div class="pic"><img alt="${c}" src="img/${c.toLowerCase()}.jpg"></div><div class="t">${c}</div></div>`}).join('')}</div></section>`;
 }
 /* Crea una tarjeta de producto con precio, tonos y acciones disponibles. */
-function card(p,cmp){
+function card(p,cmp,related=false){
  return `<div class="card"><div class="pic" data-go="/producto/${p.id}">${pic(p)}</div>${cmp?`<label class="cmpchk"><input type="checkbox" data-cmp="${p.id}" ${S.cmp.includes(p.id)?'checked':''}> Comparar</label>`:''}<div class="body">
  <div class="nm">${esc(p.name)}<br><small style="color:var(--mut)">${esc(p.brand)}</small></div><div class="price">${money(p.price)}</div>${dots(p)}${stars(p)}
   <button class="btn sm" data-go="/producto/${p.id}">Ver detalle</button>
- ${cmp?(avail(p)?`<button class="btn sm out" data-add="${p.id}">Agregar al carrito</button>`:`<button class="btn sm out" disabled>Agotado</button>`):''}</div></div>`;
+ ${cmp?(avail(p)?`<button class="btn sm out" data-add="${p.id}">Agregar al carrito</button>`:`<button class="btn sm out" disabled>Agotado</button>`):''}
+ ${related?(avail(p)?`<button class="btn sm out related-add" data-add="${p.id}">Agregar al carrito</button>`:`<button class="btn sm out related-add" disabled>Agotado</button>`):''}</div></div>`;
 }
 
 /* ---------- CATÁLOGO, BÚSQUEDA Y FILTROS ---------- */
@@ -200,7 +249,7 @@ function list(){
  <div><label>Rango de precio</label><div class="row2"><input type="number" min="0" placeholder="Mín" data-f="min" value="${f.min||''}"><input type="number" min="0" placeholder="Máx" data-f="max" value="${f.max||''}"></div></div>
  <button class="btn out sm" id="clearf">Limpiar filtros</button></aside>
  <div><div class="toolbar"><h2 class="serif" style="font-size:26px">${S.q?'Resultados de «'+esc(S.q)+'»':(S.cat||'Maquillaje')}</h2></div>
- ${res.length?`<div class="grid">${res.map(p=>card(p,true)).join('')}</div>`:`<div class="empty">No se encontraron resultados</div>`}</div></div>`;
+ ${res.length?`<div class="grid">${res.map(p=>card(p,true)).join('')}</div>`:`<div class="empty"><p>${S.q?`No encontramos productos que coincidan con «${esc(S.q)}».`:'No se encontraron productos con los filtros seleccionados.'}</p><p style="color:var(--mut);margin:8px 0 14px">${S.q?'Intenta con otro nombre o revisa la categoría.':'Prueba modificando o limpiando los filtros.'}</p><button class="btn out sm" id="clearSearch">${S.q?'Limpiar búsqueda':'Limpiar filtros'}</button></div>`}</div></div>`;
 }
 /* Actualiza la barra flotante con la cantidad de productos seleccionados. */
 function renderCmpBar(){
@@ -224,7 +273,7 @@ function openCompare(){
  ${row('Disponibilidad',p=>avail(p)?'<span class="stock">En stock</span>':'<span class="stock no">Agotado</span>')}${row('Tipo de piel',p=>p.skin)}${row('Acabados',p=>p.finish)}${row('Fórmula cosmética',p=>p.formula)}${row('Beneficios',p=>esc(p.benefits))}
  <tr><td>Cantidad</td>${ps.map(p=>`<td>${avail(p)?`<div class="qty" data-cq="${p.id}"><button data-cm="-">−</button><span>1</span><button data-cm="+">+</button></div>
  ${p.tones.length>1?`<select data-ct="${p.id}" style="margin-top:6px">${p.tones.filter(t=>t.ok).map(t=>`<option>${t.n}</option>`).join('')}</select>`:''}
- <div style="margin-top:8px"><button class="btn sm" data-cadd="${p.id}">Agregar al carrito</button></div><div class="msg" id="cmsg${p.id}"></div>`:''}</td>`).join('')}</tr></table></div></div>`;
+ <div style="margin-top:8px"><button class="btn sm" data-cadd="${p.id}">Agregar al carrito</button></div><div class="msg" id="cmsg${p.id}"></div>`:`<div class="qty" aria-label="Cantidad no disponible"><button disabled aria-label="Disminuir cantidad">−</button><span>—</span><button disabled aria-label="Aumentar cantidad">+</button></div><div style="margin-top:8px"><button class="btn sm" disabled>Producto agotado</button></div>`}</td>`).join('')}</tr></table></div></div>`;
 }
 /* Cierra y limpia el contenido de la ventana modal. */
 function closeModal(){$('#modal').hidden=true;$('#modal').innerHTML=''}
@@ -234,20 +283,28 @@ function closeModal(){$('#modal').hidden=true;$('#modal').innerHTML=''}
 /* Renderiza la ficha del producto y sus controles de galería, tonos y cantidad. */
 function detail(){
  const p=P(S.arg);if(!p)return '<div class="wrap empty">No se encontraron resultados</div>';
-  const selTone=S.tone||firstTone(p);
- const th=p.tones.find(t=>t.n===selTone);
- const imgs=photosOf(p).map((_,i)=>i),NI=imgs.length;
+ const selTone=S.tone||firstTone(p);
+ const imgs=photosOf(p).map((_,i)=>i);
+ const sameCategory=S.products.filter(x=>x.id!==p.id&&x.cat===p.cat);
+ const sameType=S.products.filter(x=>x.id!==p.id&&x.cat!==p.cat&&x.type===p.type);
+ const complementary=S.products.filter(x=>x.id!==p.id&&!sameCategory.some(y=>y.id===x.id)&&!sameType.some(y=>y.id===x.id));
+ const recommendations=[...sameCategory,...sameType,...complementary].slice(0,4);
+ const lookProducts=[...sameCategory,...sameType,...complementary].slice(0,2);
  return `<div class="crumb">Inicio › ${p.cat} › ${esc(p.name)}</div><div class="detail">
- <div class="thumbs">${imgs.map(i=>`<div class="${S.img===i?'on':''}" data-img="${i}">${pic(p,i)}</div>`).join('')}</div>
- <div class="gal"><button class="nav" style="left:10px" data-nav="-1">‹</button>${pic(p,S.img)}<button class="nav" style="right:10px" data-nav="1">›</button></div>
- <div><a class="link" data-go="${S.back||'/lista'}">← Volver al listado</a><h1 style="font-size:26px;margin:10px 0 4px">${esc(p.name)}</h1><div class="price" style="font-size:22px">${money(p.price)}</div>${stars(p)}
+ <div class="gallery-column">
+  <div class="gallery-top"><div class="thumbs">${imgs.map(i=>`<div class="${S.img===i?'on':''}" data-img="${i}">${pic(p,i)}</div>`).join('')}</div>
+  <div class="gal"><button class="nav" style="left:10px" data-nav="-1" aria-label="Imagen anterior">‹</button>${pic(p,S.img)}<button class="nav" style="right:10px" data-nav="1" aria-label="Imagen siguiente">›</button></div></div>
+  <section class="complete-look" aria-label="Completa tu look"><div class="look-heading"><h2>Completa tu look</h2><p>Combínalo con productos que complementan tu estilo.</p></div><div class="look-grid">${lookProducts.map(x=>`<article class="look-card"><a class="look-image" data-go="/producto/${x.id}">${pic(x)}</a><div class="look-copy"><a class="look-name" data-go="/producto/${x.id}">${esc(x.name)}</a><strong>${money(x.price)}</strong><button class="btn sm out" data-add="${x.id}" ${avail(x)?'':'disabled'}>${avail(x)?'Agregar':'Agotado'}</button></div></article>`).join('')}</div></section>
+ </div>
+ <div class="product-info"><a class="link" data-go="${S.back||'/lista'}">← Volver al listado</a><h1 style="font-size:26px;margin:10px 0 4px">${esc(p.name)}</h1><div class="price" style="font-size:22px">${money(p.price)}</div>${stars(p)}
  <p style="margin:12px 0;color:var(--mut);line-height:1.5">${esc(p.desc)}</p>
  <div style="display:flex;justify-content:space-between;align-items:center"><b>Contenido: ${p.content}</b>${avail(p)?'<span class="stock">En stock</span>':'<span class="stock no">Agotado</span>'}</div>
  ${p.tones.length?`<div style="margin-top:12px"><b>Tonos disponibles:</b> <span style="color:var(--mut)">${esc(selTone||'')}</span><div class="tones">${p.tones.map(t=>`<span class="tone ${t.ok?'':'off'} ${t.n===selTone&&t.ok?'on':''}" title="${esc(t.n)}" style="background:${t.hex}" data-tone="${esc(t.n)}"></span>`).join('')}</div></div>`:''}
  <b>Cantidad:</b><div style="margin:6px 0 12px"><div class="qty"><button data-q="-">−</button><span>${S.qty}</span><button data-q="+">+</button></div></div>
  <div class="msg" id="dmsg"></div>
  <button class="btn full" id="dadd" ${avail(p)?'':'disabled'}>${avail(p)?'Agregar al carrito':'Agotado'}</button>
- <table class="info"><tbody>${[['Descripción',p.desc],['Contenido',p.content],['Tipo de piel',p.skin],['Acabados',p.finish],['Fórmula cosmética',p.formula],['Ingredientes',p.ingr],['Modo de uso',p.use],['Cuidados',p.care],['Beneficios',p.benefits]].map(([a,b])=>`<tr><th>${a}</th><td>${esc(b)}</td></tr>`).join('')}</tbody></table></div></div>`;
+ <table class="info"><tbody>${[['Descripción',p.desc],['Contenido',p.content],['Tipo de piel',p.skin],['Acabados',p.finish],['Fórmula cosmética',p.formula],['Ingredientes',p.ingr],['Modo de uso',p.use],['Cuidados',p.care],['Beneficios',p.benefits]].map(([a,b])=>`<tr><th>${a}</th><td>${esc(b)}</td></tr>`).join('')}</tbody></table></div></div>
+ <section class="sec related-products" aria-label="Productos similares"><div class="sec-h"><div><h2>También te puede interesar</h2><p>Descubre otros favoritos para complementar tu rutina.</p></div><a data-go="/lista/${esc(p.cat)}">Ver más</a></div><div class="grid">${recommendations.map(x=>card(x,false,true)).join('')}</div></section>`;
 }
 
 /* ---------- CARRITO DE COMPRAS ---------- */
@@ -385,6 +442,22 @@ function adminOrd(){
  <button class="btn" id="osave">Guardar cambios</button>`,'ped');
 }
 
+/* ---------- INFORMACIÓN DE DERECHOS DE AUTOR ---------- */
+/* Página informativa añadida sin alterar los flujos existentes de la tienda. */
+function copyrightPage(){
+ return `<section class="copyright-page">
+  <div class="copyright-page-head"><span class="copyright-symbol">©</span><div><h1>Derechos de autor</h1><p>Información sobre la propiedad intelectual de JDI Beauty</p></div></div>
+  <section class="copyright-owner"><h2>Titulares del proyecto</h2><p>Este proyecto fue desarrollado por:</p><strong>Jesús Ruiz · Dianys Ramirez · Isabella Vargas</strong></section>
+  <div class="copyright-columns">
+   <article><h2>¿Qué está protegido?</h2><p>Los elementos originales desarrollados para esta plataforma, como su diseño, estructura, textos, identidad visual y código fuente.</p></article>
+   <article><h2>Uso del contenido</h2><p>No se permite reproducir, distribuir, modificar o utilizar comercialmente los elementos originales sin autorización de sus titulares.</p></article>
+   <article><h2>Contenido de terceros</h2><p>Las imágenes, recursos y materiales de terceros o generados mediante herramientas de inteligencia artificial se rigen por sus respectivas licencias y condiciones de uso.</p></article>
+  </div>
+  <p class="copyright-legal-note">La protección de las obras originales se rige por las normas aplicables de propiedad intelectual en Colombia, incluida la Ley 23 de 1982 y sus modificaciones.</p>
+  <button class="btn" data-go="/">Volver a la tienda</button>
+ </section>`;
+}
+
 /* ---------- ENRUTADOR DE VISTAS ---------- */
 /* Interpreta location.hash y determina qué vista debe mostrarse. */
 /* Interpreta la URL para elegir la vista y reiniciar los datos temporales necesarios. */
@@ -396,18 +469,42 @@ function route(){
  else if(seg[0]==='lista'){S.view='list';S.cat=decodeURIComponent(seg[1]||'');if(prev!=='list'||S.lastCat!==S.cat+S.q){S.f={};S.cmp=[]}S.lastCat=S.cat+S.q;S.back=h}
  else if(seg[0]==='producto'){S.view='detail';S.arg=seg[1];S.tone=null;S.qty=1;S.img=0}
  else if(seg[0]==='carrito')S.view='cart';
+ else if(seg[0]==='derechos')S.view='derechos';
  else if(seg[0]==='compra'){S.view='checkout';if(prev!=='checkout'){S.step=1;S.err={};S.deliv=false}}
  else if(seg[0]==='admin'){S.view=isAdmin()?'admin-'+(seg[1]||'catalogo'):'admin-login';S.oid=seg[2]||null}
  else S.view='home';
  closeModal();render();window.scrollTo(0,0);
 }
+/* Carrusel principal: avance automático, navegación manual y pausa accesible. */
+let heroIndex=0, heroTimer=null;
+function showHeroSlide(next){
+ const root=$('#heroCarousel');if(!root)return;
+ const slides=[...root.querySelectorAll('[data-hero-slide]')];
+ const dots=[...root.querySelectorAll('[data-hero-dot]')];if(!slides.length)return;
+ heroIndex=(next+slides.length)%slides.length;
+ slides.forEach((slide,i)=>{slide.classList.toggle('is-active',i===heroIndex);slide.setAttribute('aria-hidden',i===heroIndex?'false':'true')});
+ dots.forEach((dot,i)=>{dot.classList.toggle('active',i===heroIndex);dot.setAttribute('aria-pressed',i===heroIndex?'true':'false')});
+}
+function initHeroCarousel(){
+ // Limpia cualquier temporizador anterior para evitar intervalos duplicados.
+ if(heroTimer){clearInterval(heroTimer);heroTimer=null;}
+ const root=$('#heroCarousel');if(!root)return;
+ heroIndex=0;showHeroSlide(0);
+ // Avanza cada 4,5 segundos. Solo se pausa cuando la pestaña no está visible;
+ // el foco sobre flechas/puntos o el cursor encima no bloquean el autoplay.
+ heroTimer=setInterval(()=>{
+  if(document.visibilityState==='visible' && $('#heroCarousel')) showHeroSlide(heroIndex+1);
+ },4500);
+}
+
 /* Inserta la vista actual en #app y actualiza encabezado y comparación. */
 function render(){
  const v=S.view;
  renderHeader();
- $('#app').innerHTML=v==='home'?home():v==='list'?list():v==='detail'?detail():v==='cart'?cart():v==='checkout'?checkout():
+ $('#app').innerHTML=v==='home'?home():v==='list'?list():v==='detail'?detail():v==='cart'?cart():v==='checkout'?checkout():v==='derechos'?copyrightPage():
   v==='admin-login'?login():v==='admin-pedidos'?(S.oid?adminOrd():adminPed()):v==='admin-inventario'?adminInv():adminCat();
  renderCmpBar();
+ initHeroCarousel();
 }
 
 /* ---------- DELEGACIÓN DE EVENTOS ---------- */
@@ -415,11 +512,14 @@ function render(){
 document.addEventListener('click',e=>{
  const t=e.target;const c=(s)=>t.closest(s);
  let x;
+ if(x=c('[data-hero-nav]')){showHeroSlide(heroIndex+(+x.dataset.heroNav));return}
+ if(x=c('[data-hero-dot]')){showHeroSlide(+x.dataset.heroDot);return}
  if(x=c('[data-go]')){go(x.dataset.go);return}
  if(x=c('[data-detail]')){closeModal();go('/producto/'+x.dataset.detail);return}
  if(c('#backlist')){S.cmp=[];closeModal();render();return}
  if(c('#closem')){closeModal();return}
  if(c('#clearf')){S.f={};render();return}
+ if(c('#clearSearch')){go('/lista');return}
  if(c('#docmp')){openCompare();return}
  if(x=c('[data-add]')){addToCart(x.dataset.add,curTone(P(x.dataset.add)),1);return}
  if(x=c('[data-ctone]')){const [id,n]=x.dataset.ctone.split('|');if(toneOk(P(id),n)){S.ct[id]=n;render()}return}
@@ -471,21 +571,26 @@ document.addEventListener('click',e=>{
  if(c('#osave')){const o=S.orders.find(z=>z.id==S.oid),v=$('#ostate').value;
   if(v===o.status){toast('El estado no ha cambiado');return}o.status=v;save();render();toast('Estado del pedido actualizado');return}
 });
+/* DOCUMENTACIÓN: Listener para cambios en filtros, selección de productos para comparar y opciones de compra. */
 document.addEventListener('change',e=>{
  const t=e.target;
  if(t.dataset.f!==undefined){S.f[t.dataset.f]=t.value;render();return}
- if(t.dataset.cmp){const id=+t.dataset.cmp;
-  if(t.checked){if(S.cmp.length>=4){t.checked=false;toast('Máximo 4 productos para comparar');return}S.cmp.push(id)}else S.cmp=S.cmp.filter(z=>z!==id);
+ if(t.matches && t.matches('input[type="checkbox"][data-cmp]')){const id=+t.getAttribute('data-cmp');
+  if(t.checked){if(S.cmp.length>=4){t.checked=false;toast('Límite alcanzado: solo puedes comparar 4 productos. Quita uno de la selección para agregar otro.');return}S.cmp.push(id)}else S.cmp=S.cmp.filter(z=>z!==id);
   renderCmpBar();return}
  if(t.name==='pm'){S.pm=t.value;S.payErr='';render();return}
  if(t.id==='pf_photos'){/* fotos cargadas en el formulario */}
 });
+/* DOCUMENTACIÓN: Listener de entrada para mantener en memoria los campos del formulario mientras se escriben y actualizar la validación y el resumen. */
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset.co){S.co[t.dataset.co]=t.value;if(S.err[t.dataset.co]){delete S.err[t.dataset.co];const f=t.closest('.fld');if(f){f.classList.remove('err');const er=f.querySelector('.e');if(er)er.remove()}}const b=$('#sumbox');if(b&&S.view==='checkout')b.innerHTML=sumInner()}});
+/* DOCUMENTACIÓN: Listener para cambios en filtros, selección de productos para comparar y opciones de compra. */
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.co==='depto'){S.co.depto=t.value;const b=$('#sumbox');if(b)b.innerHTML=sumInner()}});
+/* DOCUMENTACIÓN: Listener de envío de formularios. Controla el inicio de sesión administrativo de demostración y la búsqueda sin recargar la página. */
 document.addEventListener('submit',e=>{
  if(e.target.id==='lform'){e.preventDefault();const u=$('#lu').value.trim().toLowerCase(),p=$('#lp').value;
   if((u==='jdi'||u==='jid')&&p==='1234'){S.loginErr=false;S.adm=1;try{sessionStorage.setItem('jdiAdmin','1')}catch(e){}if(!/admin\//.test(location.hash))location.hash='/admin/catalogo';else route();}
   else{S.loginErr=true;render()}return}
  if(e.target.id==='sform'){e.preventDefault();const q=$('#sq').value.trim();go('/lista'+(q?'?q='+encodeURIComponent(q):''))}});
+/* DOCUMENTACIÓN: Escucha cambios de ruta en el fragmento de la URL y vuelve a interpretar la navegación. */
 window.addEventListener('hashchange',route);
 route();

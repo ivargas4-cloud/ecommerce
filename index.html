@@ -1,27 +1,17 @@
-<!--
-  JDI BEAUTY — Documento principal de la tienda.
-  Este archivo define la estructura HTML mínima y carga los estilos y la lógica.
-  Las vistas del catálogo, detalle, carrito, compra y administración se generan
-  dinámicamente desde app.js dentro del elemento #app.
-  Se agregan comentarios únicamente; no se cambian elementos ni comportamientos.
--->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<!-- Metadatos, título, tipografías externas y hoja de estilos. -->\n<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JDI Beauty</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-</head>
-<!-- Contenido visible de la aplicación. Los contenedores dinámicos son gestionados por app.js. -->\n<body>
-<!-- Franja promocional superior. -->\n<div id="topbar" class="topbar">Belleza que resalta tu esencia</div>
-<!-- El encabezado y la navegación se insertan dinámicamente. -->\n<header id="header" class="header"></header>
-<!-- Contenedor principal: app.js renderiza aquí la vista de la ruta actual. -->\n<main id="app"></main>
-<!-- Barra flotante de comparación de productos. -->\n<div id="cmpbar" class="cmpbar" hidden></div>
-<!-- Ventana modal reutilizable para formularios y comparaciones. -->\n<div id="modal" class="modal" hidden></div>
-<!-- Mensajes temporales de confirmación o validación. -->\n<div id="toast" class="toast" hidden></div>
-<!-- Lógica de navegación, renderizado, catálogo, carrito y administración. -->\n<script src="app.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#B8637A" />
+    <meta name="description" content="JDI Beauty — tienda de maquillaje de demostración." />
+    <title>JDI Beauty</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

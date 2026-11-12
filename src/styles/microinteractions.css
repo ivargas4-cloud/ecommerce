@@ -1,0 +1,40 @@
+/* Microinteracciones adicionales de JDI Beauty. No cambian reglas de negocio. */
+:root {
+  --jdi-rose: #B8637A;
+  --jdi-soft: #E3AFA0;
+  --jdi-mauve: #8C5468;
+  --jdi-cream: #F7EDE9;
+  --jdi-ink: #3A2C2E;
+}
+
+/*
+ * Transiciones discretas en controles existentes, sin cambiar sus acciones.
+ * Se limitan a propiedades visuales para no afectar los cálculos o eventos.
+ */
+button, a, input, select, textarea, .btn, .card, .cat, .tone, .dot, .cbtn, .cmpchk {
+  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease,
+    box-shadow 180ms ease, transform 180ms ease, opacity 180ms ease;
+}
+button:hover, .btn:hover, .cbtn:hover { filter: brightness(1.035); }
+button:active, .btn:active, .cbtn:active { transform: scale(.985); }
+input:focus, select:focus, textarea:focus {
+  border-color: var(--jdi-rose) !important;
+  box-shadow: 0 0 0 .2rem #b8637a26 !important;
+}
+.card, .cat { animation: jdi-appear 260ms ease both; }
+.tone:hover, .dot:hover { transform: scale(1.07); }
+.tone:focus-visible, .dot:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--jdi-rose); outline-offset: 3px;
+}
+/*
+ * Toast y modal aparecen suavemente cuando app.js los muestra.
+ * La visibilidad continúa controlada por el atributo hidden del motor original.
+ */
+.toast:not([hidden]), .modal:not([hidden]) { animation: jdi-fade-in 180ms ease both; }
+@keyframes jdi-appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes jdi-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Respeta la preferencia del sistema operativo para reducir movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
