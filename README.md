@@ -1,122 +1,222 @@
-# JDI Beauty — frontend documentado
+# JDI Beauty 💄
+### Tienda virtual de maquillaje | Proyecto académico de desarrollo frontend
 
-Tienda de maquillaje de demostración con React, Vite, Bootstrap 5, JavaScript y CSS personalizado. El motor funcional original se conserva mediante un puente de compatibilidad para reducir el riesgo de cambiar el comportamiento existente.
+JDI Beauty es una tienda virtual de demostración especializada en productos de maquillaje. Su interfaz permite explorar un catálogo, consultar productos, aplicar filtros, comparar referencias, gestionar un carrito de compras y simular el proceso de compra.
 
-## Alcance
+El proyecto está desarrollado con React, Vite, Bootstrap 5, JavaScript y CSS personalizado. Su arquitectura conserva el motor funcional original mediante un puente de compatibilidad, integrándolo con la estructura de React y Vite.
 
-- **Solo frontend.** No contiene backend, API propia ni base de datos.
-- **Compra y pago simulados.** No se procesa dinero ni se debe introducir información bancaria real.
-- **Persistencia local.** El estado de productos, carrito y pedidos se serializa en `localStorage` bajo la clave `jdi2`. No se sincroniza entre dispositivos.
-- **Catálogo inicial.** Los productos de demostración están definidos como `SEED` dentro de `public/app.js`.
+---
 
-## Tecnologías
+## 📌 Características principales
 
-- **React 18:** monta la aplicación y el puente de compatibilidad.
-- **Vite:** servidor de desarrollo y compilación del frontend.
-- **Bootstrap 5:** utilidades y estilos base disponibles para la interfaz.
-- **JavaScript ES6+:** lógica del catálogo, filtros, detalle, comparación, carrito, checkout simulado y administración local.
-- **CSS:** diseño original y microinteracciones.
-- **JSON:** formato usado para serializar el estado en `localStorage`; no es una base de datos ni un archivo del proyecto que el navegador reescriba.
+- **Catálogo de productos:** visualización de productos organizados por categorías.
+- **Búsqueda y filtros:** herramientas para localizar productos y explorar el catálogo.
+- **Detalle de productos:** consulta de información y galerías fotográficas.
+- **Comparación:** comparación de diferentes productos.
+- **Carrito de compras:** administración de productos y cantidades.
+- **Compra simulada:** flujo de checkout de demostración.
+- **Administración local:** gestión de productos desde la interfaz administrativa.
+- **Persistencia local:** conservación del estado de la aplicación mediante `localStorage`.
+- **Diseño responsive:** adaptación de la interfaz a diferentes tamaños de pantalla.
+- **Microinteracciones:** transiciones, efectos visuales y estados de interacción.
 
-## Estructura
+## 🛠️ Tecnologías utilizadas
+
+| Tecnología | Uso en el proyecto |
+|---|---|
+| React 18 | Montaje de la aplicación y compatibilidad con el motor original. |
+| Vite | Entorno de desarrollo y compilación. |
+| Bootstrap 5 | Utilidades y estilos base de la interfaz. |
+| JavaScript ES6+ | Lógica funcional de la tienda. |
+| HTML5 | Estructura de la aplicación. |
+| CSS3 | Diseño visual, responsive y microinteracciones. |
+| JSON | Serialización de información para el almacenamiento local. |
+| localStorage | Persistencia de datos en el navegador. |
+
+## 📁 Estructura del proyecto
 
 ```text
-JDI_Beauty_React_Vite_Bootstrap_Documentado/
+JDI_Beauty/
 ├── index.html
 ├── package.json
 ├── vite.config.js
 ├── README.md
 ├── DOCUMENTACION_CODIGO.md
+│
 ├── public/
-│   ├── app.js                 # Motor funcional original con comentarios
-│   ├── styles.css             # Estilos visuales conservados
-│   └── img/                   # Imágenes locales
+│   ├── app.js
+│   ├── styles.css
+│   └── img/
+│       ├── banners/
+│       └── productos/
+│
 └── src/
-    ├── main.jsx               # Entrada de React y carga de Bootstrap
-    ├── App.jsx                # Montaje compatible con el motor original
+    ├── main.jsx
+    ├── App.jsx
     └── styles/
         └── microinteractions.css
 ```
 
-## Instalación y ejecución
+### Descripción de los archivos principales
 
-Requisitos: Node.js LTS y npm.
+| Archivo o carpeta | Responsabilidad |
+|---|---|
+| `index.html` | Documento HTML principal. |
+| `package.json` | Dependencias y comandos del proyecto. |
+| `vite.config.js` | Configuración de Vite. |
+| `src/main.jsx` | Punto de entrada de React y carga de estilos. |
+| `src/App.jsx` | Montaje de la interfaz y puente de compatibilidad. |
+| `public/app.js` | Motor funcional de la tienda. |
+| `public/styles.css` | Estilos principales de la interfaz. |
+| `src/styles/microinteractions.css` | Animaciones y microinteracciones. |
+| `public/img/` | Recursos gráficos e imágenes locales. |
+| `DOCUMENTACION_CODIGO.md` | Documentación técnica detallada del código. |
 
-1. Descomprime el ZIP.
-2. Abre la carpeta raíz del proyecto en Visual Studio Code.
-3. Abre la terminal en esa carpeta.
-4. Instala las dependencias:
+## 🚀 Instalación y ejecución
 
-   ```bash
-   npm install
-   ```
+### Requisitos previos
 
-5. Inicia el servidor de desarrollo:
+- [Node.js](https://nodejs.org/) — versión LTS recomendada.
+- npm, incluido con Node.js.
+- Visual Studio Code (recomendado).
 
-   ```bash
-   npm run dev
-   ```
+### 1. Clonar el repositorio
 
-6. Abre la URL que indique Vite, normalmente `http://localhost:5173`.
-7. Para comprobar la compilación:
+```bash
+git clone https://github.com/ivargas4-cloud/ecommerce.git
+```
 
-   ```bash
-   npm run build
-   npm run preview
-   ```
+### 2. Ingresar a la carpeta del proyecto
 
-## Documentación del código
+```bash
+cd ecommerce
+```
 
-Consulta **`DOCUMENTACION_CODIGO.md`** para conocer:
-- responsabilidades de cada archivo;
-- funciones y grupos de lógica de `public/app.js`;
-- estado, almacenamiento, filtros, detalle, comparación, carrito, compra y administración;
-- CSS y microinteracciones;
-- límites de seguridad y persistencia;
-- lista de pruebas de regresión.
+### 3. Instalar las dependencias
 
-Los comentarios dentro de los archivos explican la intención de las funciones y los bloques principales. Los comentarios no cambian el comportamiento del programa.
+```bash
+npm install
+```
 
-## Microinteracciones
+### 4. Ejecutar el servidor de desarrollo
 
-`src/styles/microinteractions.css` añade transiciones discretas, estados hover/active, realce de foco, animación de aparición para tarjetas/notificaciones/modales y soporte para `prefers-reduced-motion`. Las acciones y reglas de negocio siguen a cargo de `public/app.js`.
+```bash
+npm run dev
+```
 
-## Nota de arquitectura
+Vite mostrará en la terminal la dirección local para abrir la aplicación, normalmente:
 
-`src/App.jsx` mantiene los IDs que espera el motor original (`topbar`, `header`, `app`, `cmpbar`, `modal`, `toast`). No se deben renombrar sin adaptar el motor. Esta entrega organiza el proyecto con React + Vite, pero conserva la lógica heredada mediante un puente; no es una reescritura completa de cada vista como componente React nativo.
+```text
+http://localhost:5173
+```
 
-## Verificación antes de entregar
+### 5. Compilar para producción
 
-Ejecuta `npm install`, `npm run build` y la lista de pruebas de `DOCUMENTACION_CODIGO.md`. La documentación por sí sola no demuestra que todos los flujos hayan pasado pruebas de navegador.
+Para comprobar que el proyecto puede compilarse:
 
+```bash
+npm run build
+```
 
-## Corrección de edición administrativa
+Para visualizar la compilación localmente:
 
-Se añadió una regla CSS de compatibilidad para el contenedor `#modal`: Bootstrap 5 define una clase global `.modal` con `display: none`, que puede ocultar el formulario legado de edición aunque JavaScript retire el atributo `hidden`. La regla `.modal:not([hidden]) { display: block; }` permite que el formulario se muestre como en la versión original. La lógica `prodForm(...)` y `saveProd(...)` de `public/app.js` se conserva.
+```bash
+npm run preview
+```
 
+## 🏗️ Arquitectura y funcionamiento
 
-## Ajustes visuales de esta versión
+JDI Beauty utiliza React y Vite como estructura de ejecución y desarrollo, mientras conserva el motor funcional original en `public/app.js`.
 
-- El botón **Descubrir productos** tiene un acercamiento más visible al pasar el cursor y una respuesta de pulsación.
-- Las flechas de la galería de producto son más grandes, contrastadas y muestran estados hover/active/focus.
-- Las flechas del menú se muestran solo en **Maquillaje**, que sí tiene un menú desplegable. Labios, Ojos y Rostro son enlaces directos, por lo que ya no muestran un indicador engañoso.
-- El menú de Maquillaje ahora aparece con transición y también se puede abrir mediante foco de teclado.
-- La galería de producto permanece visible en pantallas grandes mientras se consulta la ficha, reduciendo la sensación de columna vacía debajo de la imagen.
-- Se añadieron estados visibles de foco a los campos y una regla para respetar `prefers-reduced-motion`.
+`src/App.jsx` mantiene los elementos e identificadores que necesita el motor heredado para operar correctamente. Este enfoque permite integrar la aplicación en la estructura de React sin reescribir completamente sus vistas y funcionalidades.
 
-Estos cambios son de presentación. No modifican las reglas del catálogo, carrito, comparación, inventario, pedidos ni edición administrativa.
+**Importante:** esta arquitectura utiliza un puente de compatibilidad. No corresponde a una reescritura completa de la tienda mediante componentes React independientes.
 
+## 💾 Almacenamiento de información
 
-La escena final del carrusel usa una fotografía sin titular promocional; el texto de campaña se superpone mediante HTML/CSS para mantener nitidez y adaptación responsiva.
+La aplicación utiliza `localStorage` para conservar información en el navegador.
 
+- La información se serializa en formato JSON.
+- La clave de almacenamiento utilizada es `jdi2`.
+- Los datos permanecen asociados al navegador y dispositivo donde se utiliza la aplicación.
+- No existe sincronización entre dispositivos ni almacenamiento centralizado.
 
-El carrusel conserva el texto de la escena 2 reubicado en el espacio central-derecho. La escena final muestra el mensaje de marca como HTML/CSS sobre la fotografía limpia.
+El catálogo inicial de demostración se encuentra definido mediante la constante `SEED` en `public/app.js`.
 
+## 🖼️ Recursos gráficos
 
-## Galerías fotográficas de productos (integración HD)
+El proyecto incorpora recursos visuales locales para las categorías, banners y productos.
 
-Se incorporaron 45 fotografías HD en `public/img/productos/`, organizadas en galerías de cinco imágenes para los productos con material disponible. La selección se configura en `PRODUCT_GALLERIES` dentro de `public/app.js`, asociada al ID del producto; así se mantiene aunque el navegador tenga datos antiguos guardados en `localStorage`.
+Se integraron **50 fotografías de productos**, organizadas en galerías de cinco imágenes para cada uno de los diez productos del catálogo.
 
-Productos con galería integrada: Base de Maquillaje Luminosa, Rubor Compacto, Máscara de Pestañas Volume, Paleta de Sombras Nude, Polvo Compacto Traslúcido, Labial Satinado Rose, Máscara de Pestañas Lengthening, Paleta de Sombras Cobre y Base de Maquillaje Cobertura Total.
+La configuración de las galerías se encuentra en `PRODUCT_GALLERIES`, dentro de `public/app.js`, asociada al identificador de cada producto.
 
-Pendiente de fotografías: Labial Mate Velvet. No se asignaron imágenes por aproximación para evitar mostrar fotografías de otro acabado o producto.
+## 🎨 Diseño y experiencia de usuario
+
+La interfaz utiliza una identidad visual basada en tonos rosados, nude y neutros, con una presentación orientada al sector de la belleza y el maquillaje.
+
+Se incorporan:
+
+- Diseño adaptable a dispositivos móviles, tabletas y computadores.
+- Efectos de interacción en botones y elementos de navegación.
+- Transiciones en menús, tarjetas y notificaciones.
+- Estados visibles de foco para mejorar la navegación mediante teclado.
+- Compatibilidad con la preferencia de movimiento reducido mediante `prefers-reduced-motion`.
+
+## ⚠️ Alcance y limitaciones
+
+Este proyecto corresponde a una demostración académica de frontend.
+
+- No cuenta con backend ni API propia.
+- No utiliza una base de datos.
+- El proceso de compra es simulado.
+- No procesa pagos reales ni transacciones financieras.
+- Los datos se almacenan únicamente en el navegador mediante `localStorage`.
+- La información de administración y los pedidos no se sincronizan con un servidor.
+- No debe introducirse información bancaria, contraseñas reales ni datos personales sensibles.
+
+## 📚 Documentación técnica
+
+Para profundizar en la implementación, consulta el archivo **[DOCUMENTACION_CODIGO.md](./DOCUMENTACION_CODIGO.md)**.
+
+Allí se documentan:
+
+- Responsabilidades de los archivos.
+- Organización del motor funcional.
+- Gestión del estado y almacenamiento local.
+- Catálogo, filtros y detalle de productos.
+- Comparación y carrito de compras.
+- Flujo de compra simulado.
+- Administración local.
+- Estilos y microinteracciones.
+- Consideraciones de seguridad y persistencia.
+- Pruebas de regresión recomendadas.
+
+## 🧪 Verificación del proyecto
+
+Antes de considerar una modificación como lista para entrega, se recomienda ejecutar:
+
+```bash
+npm install
+npm run build
+```
+
+También se recomienda probar manualmente los principales flujos de navegación, búsqueda, filtros, comparación, carrito, compra simulada y administración.
+
+Una compilación exitosa confirma que Vite pudo generar la versión de producción, pero no garantiza por sí sola que todas las funcionalidades hayan superado pruebas de navegador.
+
+## 👥 Autores
+
+Proyecto desarrollado por:
+
+- Jesús Ruiz
+- Dianys Ramirez
+- Isabella Vargas
+
+## 📄 Derechos de autor
+
+© 2026 JDI Beauty. Todos los derechos reservados sobre los elementos originales desarrollados para este proyecto, de acuerdo con la titularidad y las condiciones legales aplicables.
+
+---
+
+**JDI Beauty — Belleza, estilo y experiencia digital.**
